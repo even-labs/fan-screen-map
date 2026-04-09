@@ -120,7 +120,7 @@ const TAXONOMY = {
       { name: "Document Viewer", route: "/access/document/[slug]", level: "L2", auth: true },
       { name: "Merchandise", route: "/access/merchandise/[slug]", level: "L2", auth: true },
       { name: "Event / RSVP", route: "/access/event/[slug]", level: "L2", auth: true },
-      { name: "Podcast Player", route: "/access/podcast/[slug]", level: "L2", auth: true },
+      { name: "Audio Player (podcast mode)", route: "/access/audio/[slug]", level: "L2", auth: true },
       { name: "Stems Download", route: "/access/stems/[slug]", level: "L2", auth: true },
       { name: "Album Browser", route: "/access/media/album/[slug]", level: "L2", auth: true },
       { name: "Campaign", route: "/access/campaign/[slug]", level: "L2", auth: true },
@@ -147,6 +147,9 @@ const TAXONOMY = {
     level: "L1",
     screens: [
       { name: "Drop Link Page", route: "/l/[slug]", level: "L1", auth: false },
+      { name: "Experience Shortlink (no access)", route: "/e/[slug]", level: "L1", auth: false },
+      { name: "Experience Shortlink (with access)", route: "/ep/[slug]", level: "L1", auth: true },
+      { name: "404 Page", route: "/404", level: "L0", auth: false },
     ]
   },
 };
@@ -422,6 +425,18 @@ const FLOW_GROUPS = [
       { id: 29, name: "404 Page", priority: "P3", suite: "Error" },
       { id: 30, name: "Mobile Responsive Checkout", priority: "P3", suite: "Responsive" },
       { id: 31, name: "reCAPTCHA Gate on Release Page", priority: "P3", suite: "Validation" },
+      { id: 32, name: "Experience Shortlink /e/ (type routing)", priority: "P2", suite: "Navigation" },
+      { id: 33, name: "Experience Shortlink /ep/ (post-purchase)", priority: "P2", suite: "Navigation" },
+      { id: 34, name: "Artist Collection Page", priority: "P3", suite: "Browse" },
+      { id: 35, name: "Restricted Release Gate", priority: "P3", suite: "Auth" },
+      { id: 36, name: "General Chat (non-release)", priority: "P3", suite: "Chat" },
+      { id: 37, name: "Mobile Menu Navigation", priority: "P3", suite: "Responsive" },
+      { id: 38, name: "Document Viewer Access", priority: "P3", suite: "Content" },
+      { id: 39, name: "Campaign Access Page", priority: "P3", suite: "Content" },
+      { id: 40, name: "Custom Content Access", priority: "P3", suite: "Content" },
+      { id: 41, name: "External Link Access", priority: "P3", suite: "Content" },
+      { id: 42, name: "Experience Confirmation Post-Purchase", priority: "P3", suite: "Payments" },
+      { id: 43, name: "Legacy Order Page Flow", priority: "P3", suite: "Payments" },
     ]
   },
 ];

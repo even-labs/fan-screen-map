@@ -14,7 +14,7 @@
 
 <header>
   <div class="header-content">
-    <img src="assets/even-white-logo.png" alt="EVEN" style="height:28px">
+    <img src="assets/even-logo.svg" alt="EVEN" style="height:28px" onerror="this.src='assets/even-white-logo.png'">
     <div>
       <h1>Fan App — Screen Map &amp; E2E Flow Proposal</h1>
       <p class="subtitle">DRAFT v0.1.0 — Pending leadership review</p>
@@ -27,9 +27,91 @@
   <!-- Metrics -->
   <div class="metrics" id="metrics"></div>
 
-  <!-- Section 1: About -->
+  <!-- Section 1: Navigation Architecture -->
   <div class="section">
-    <h2>1. About this document</h2>
+    <h2>1. Navigation architecture</h2>
+    <pre class="mermaid">
+flowchart TD
+    subgraph public["Public (no auth)"]
+        explore["Explore\n/explore"]
+        releases["All Releases\n/releases/all"]
+        artists["All Artists\n/artists/all"]
+        search["Search\n/search"]
+        watch["Watch\n/watch"]
+        artist["Artist Profile\n/artists/[slug]"]
+        collection["Artist Collection\n/artists/[slug]/collection/[id]"]
+        release["Release Page\n/r/[slug]"]
+        experience["Experience Page\n/experience/[slug]"]
+        community["Community Page\n/community/[slug]"]
+        shortlink_e["Shortlink /e/[slug]"]
+        shortlink_ep["Shortlink /ep/[slug]"]
+        droplink["Drop Link\n/l/[slug]"]
+    end
+
+    subgraph auth["Auth"]
+        login["Login\n/auth/login"]
+        onboarding["Onboarding\n/auth/onboarding"]
+    end
+
+    subgraph checkout["Checkout (auth required)"]
+        checkout_page["Checkout\n/checkout/[slug]"]
+        stripe["Stripe (external)"]
+        confirmation_exp["Experience Confirmation"]
+        confirmation_com["Community Confirmation"]
+        order_legacy["Legacy Order\n/releases/order/[slug]"]
+    end
+
+    subgraph portal["Portal (post-purchase)"]
+        portal_p["/p/[slug]"]
+        portal_exp["Experience Portal\n/experience/portal/[slug]"]
+        portal_com["Community Portal\n/community/portal/[slug]"]
+    end
+
+    subgraph access["Access Content (auth + purchase)"]
+        audio["Audio Player\n/access/audio/[slug]"]
+        video["Video Player\n/access/video/[slug]"]
+        gallery["Gallery\n/access/gallery/[slug]"]
+        merch["Merchandise\n/access/merchandise/[slug]"]
+        event["Event RSVP\n/access/event/[slug]"]
+        stems["Stems\n/access/stems/[slug]"]
+        document["Document\n/access/document/[slug]"]
+        campaign["Campaign\n/access/campaign/[slug]"]
+    end
+
+    subgraph user["User (auth required)"]
+        library["Library\n/users"]
+        chats["Chats\n/chats"]
+        chat_thread["Chat Thread\n/chats/[slug]"]
+        menu["Mobile Menu\n/menu"]
+    end
+
+    explore --> releases & artists & search & watch
+    artists --> artist --> collection
+    artist --> release
+    explore --> release
+    release --> checkout_page --> stripe --> confirmation_com & confirmation_exp
+    release --> experience & community
+    shortlink_e --> experience
+    shortlink_ep --> portal_exp
+    portal_p --> audio & video & gallery & merch & event & stems & document & campaign
+    portal_com --> audio & video & gallery & merch
+    portal_exp --> video
+    library --> portal_p
+    chats --> chat_thread
+    login --> onboarding --> explore
+
+    style public fill:#1a1a2e,stroke:#e74c3c,color:#fff
+    style auth fill:#1a1a2e,stroke:#f39c12,color:#fff
+    style checkout fill:#1a1a2e,stroke:#e74c3c,color:#fff
+    style portal fill:#1a1a2e,stroke:#3498db,color:#fff
+    style access fill:#1a1a2e,stroke:#9b59b6,color:#fff
+    style user fill:#1a1a2e,stroke:#2ecc71,color:#fff
+    </pre>
+  </div>
+
+  <!-- Section 2: About -->
+  <div class="section">
+    <h2>2. About this document</h2>
     <p>This document maps every fan-facing screen in <strong>even-web</strong> (legacy fan app at app.even.biz / www.even.biz) and proposes E2E test flows for the <strong>E2E Validation Gate</strong> initiative.</p>
     <p>Built from a local stack investigation: even-web (localhost:3000) connected to even-back Docker (localhost:5000) with staging DB (1,120 users, 681 releases). All findings are <strong>proven, not assumed</strong>.</p>
     <p><strong>Purpose:</strong> Align team on screen naming, E2E test scope, and priority before writing test code. Same approach used for <a href="https://even-labs.github.io/backstage-screen-map/" style="color:var(--color-accent)">Backstage Screen Map</a>.</p>
@@ -37,26 +119,26 @@
 
   <!-- Section 2: Investigation Findings -->
   <div class="section">
-    <h2>2. Local investigation findings (2026-04-08)</h2>
+    <h2>3. Local investigation findings (2026-04-08)</h2>
     <div id="findings"></div>
   </div>
 
   <!-- Section 3: E2E Flow Storyboards -->
   <div class="section">
-    <h2>3. E2E flow storyboards</h2>
+    <h2>4. E2E flow storyboards</h2>
     <p>31 flows across 8 groups. Priority: <span class="tag tag-p0">P0</span> Revenue &middot; <span class="tag tag-p1">P1</span> Auth/Core &middot; <span class="tag tag-p2">P2</span> Features &middot; <span class="tag tag-p3">P3</span> Edge Cases</p>
     <div id="storyboards"></div>
   </div>
 
   <!-- Section 4: Blockers -->
   <div class="section">
-    <h2>4. Blockers &amp; mitigations</h2>
+    <h2>5. Blockers &amp; mitigations</h2>
     <div id="blockers"></div>
   </div>
 
   <!-- Section 5: Navigation Taxonomy -->
   <div class="section">
-    <h2>5. Complete navigation taxonomy</h2>
+    <h2>6. Complete navigation taxonomy</h2>
     <details>
       <summary class="taxonomy-toggle">Expand full taxonomy (~52 screens)</summary>
       <div id="taxonomy"></div>
@@ -65,7 +147,7 @@
 
   <!-- Section 6: Phased Rollout -->
   <div class="section">
-    <h2>6. Phased rollout</h2>
+    <h2>7. Phased rollout</h2>
     <div class="phase">
       <h4>Phase 1: Foundation (5 specs) — Blocks EWM-M1</h4>
       <ul>
