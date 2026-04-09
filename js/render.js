@@ -30,7 +30,7 @@ function renderMetrics(container, flowGroups, taxonomy) {
 function renderFindings(container, findings) {
   let html = '<table><thead><tr><th>Status</th><th>Finding</th><th>Date</th></tr></thead><tbody>';
   findings.forEach(f => {
-    const tagClass = f.status === 'proven' ? 'tag-done' : f.status === 'bug' ? 'tag-p0' : 'tag-p1';
+    const tagClass = f.status === 'proven' ? 'tag-done' : f.status === 'resolved' ? 'tag-done' : f.status === 'bug' ? 'tag-p0' : 'tag-p1';
     html += `<tr><td><span class="tag ${tagClass}">${f.status}</span></td><td>${f.finding}</td><td style="font-size:11px;color:var(--color-muted)">${f.date}</td></tr>`;
   });
   html += '</tbody></table>';
@@ -101,7 +101,7 @@ function renderStoryboards(container, flowGroups, files) {
 function renderBlockers(container, blockers) {
   let html = '<table><thead><tr><th>Blocker</th><th>Severity</th><th>Flows</th><th>Mitigation</th></tr></thead><tbody>';
   blockers.forEach(b => {
-    const tagClass = b.severity === 'Critical' ? 'tag-p0' : b.severity === 'High' ? 'tag-p1' : 'tag-p2';
+    const tagClass = b.severity === 'Resolved' ? 'tag-done' : b.severity === 'Critical' ? 'tag-p0' : b.severity === 'High' ? 'tag-p1' : 'tag-p2';
     html += `<tr><td><strong>${b.name}</strong></td><td><span class="tag ${tagClass}">${b.severity}</span></td><td style="font-size:11px">${b.flows.join(', ')}</td><td style="font-size:12px;color:var(--color-muted)">${b.mitigation}</td></tr>`;
   });
   html += '</tbody></table>';

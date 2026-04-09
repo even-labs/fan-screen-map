@@ -442,26 +442,25 @@ const INVESTIGATION_FINDINGS = [
   { status: "proven", finding: "API endpoint /api/v1/releases/[slug] returns correct JSON:API data", date: "2026-04-08" },
   // Access rights
   { status: "proven", finding: "Test fan had 49 purchases but 0 access_rights. Created 4 ARs via Rails runner for latest-release, second-release, debi-tirar-mas-fotos, hope-we-have-fun.", date: "2026-04-08" },
-  // Bugs found
-  { status: "bug", finding: "Release page 500 for some releases — double URL in mediaURL() + manual prepend (local-only, staging uses CloudFront absolute URLs)", date: "2026-04-08" },
-  { status: "bug", finding: "/access/* pages redirect to /auth/signIn from SSR — request interceptor calls getSession() (client-only) on server, returns null, overwrites Bearer token. Not a blocker for Playwright (browser handles cookies).", date: "2026-04-08" },
-  // Gaps
-  { status: "gap", finding: "New env vars from main require stubs in .env.develop (ABSOUL_MAGIC_*). Each rebase can bring new vars.", date: "2026-04-08" },
-  { status: "gap", finding: "NEXTAUTH_URL was missing http:// protocol — fixed locally", date: "2026-04-08" },
+  // Resolved findings
+  { status: "resolved", finding: "Fix F2 applied: mediaURL() absolute URL check prevents double concatenation. PR pending merge.", date: "2026-04-08" },
+  { status: "resolved", finding: "Fix F1 applied: IS_SERVER guard on getSession() in request interceptor. PR pending merge.", date: "2026-04-08" },
+  { status: "resolved", finding: "Env var stubs documented in .env.develop (ABSOUL_MAGIC_*). Maintenance process defined.", date: "2026-04-08" },
+  { status: "resolved", finding: "NEXTAUTH_URL protocol added (http://localhost:3000). Documented in .env.e2e template.", date: "2026-04-08" },
   { status: "proven", finding: "78 screenshots captured (39 desktop 1440x900 + 39 iPhone 390x844) via Playwright capture script. 52 OK, 26 redirect, 0 errors.", date: "2026-04-09" },
 ];
 
 // ── Blocker Summary ────────────────────────────────────────────────────
 const BLOCKERS = [
-  { name: "Stripe", severity: "Critical", flows: [2, 12, 14], mitigation: "Stripe test mode keys + test card 4242..." },
-  { name: "Magic SDK", severity: "Critical", flows: [1], mitigation: "E2E bypass implemented (Flow 3)" },
-  { name: "CloudFront", severity: "High", flows: [9, 16], mitigation: "Validate player presence, not actual playback" },
-  { name: "GetStream", severity: "Medium", flows: [19], mitigation: "GetStream test environment or mock" },
-  { name: "Mux", severity: "Medium", flows: [17], mitigation: "Mux test environment or mock player" },
-  { name: "Algolia", severity: "Low", flows: [7], mitigation: "Algolia test index or mock" },
-  { name: "Double URL Bug", severity: "High", flows: [9], mitigation: "Fix mediaURL() or guard against absolute URLs. Use releases without ActiveStorage relative paths (e.g., latest-release)." },
-  { name: "SSR getSession() null", severity: "Medium", flows: [16, 17, 18], mitigation: "Not a Playwright blocker — browser handles cookies. Fix: check IS_SERVER in request interceptor." },
-  { name: "Env var drift", severity: "Medium", flows: [], mitigation: "Each rebase from main can add new ENV.fetch() vars that crash boot. Maintain .env.develop stubs." },
+  { name: "Stripe", severity: "Critical", flows: [2, 12, 14], mitigation: "Visual gate only — validate button/pricing presence, no Stripe interaction. Full test deferred to Stripe test mode setup." },
+  { name: "Magic SDK", severity: "Resolved", flows: [1], mitigation: "E2E bypass implemented (Flow 3). Magic SDK not needed for CI." },
+  { name: "CloudFront", severity: "High", flows: [9, 16], mitigation: "Validate player presence, not actual playback. Images load via S3/CloudFront redirect." },
+  { name: "GetStream", severity: "Medium", flows: [19], mitigation: "GetStream test environment or mock. Chat list renders without SDK (client-side init)." },
+  { name: "Mux", severity: "Medium", flows: [17], mitigation: "Validate player component presence, not playback." },
+  { name: "Algolia", severity: "Low", flows: [7], mitigation: "Search renders with Algolia staging index. Stubbed in .env.e2e." },
+  { name: "mediaURL() double concat", severity: "Resolved", flows: [9], mitigation: "Fix F2 applied — absolute URL check. PR pending merge." },
+  { name: "SSR getSession() null", severity: "Resolved", flows: [16, 17, 18], mitigation: "Fix F1 applied — IS_SERVER guard. PR pending merge." },
+  { name: "Env var drift", severity: "Low", flows: [], mitigation: "Maintenance process defined. .env.develop stubs documented." },
 ];
 
 // ── Test Data Available (staging DB) ───────────────────────────────────
