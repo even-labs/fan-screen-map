@@ -1,0 +1,24 @@
+{
+  "name": "fan-screen-map",
+  "version": "1.0.0",
+  "description": "DRAFT v0.1.0 — Pending leadership review",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/even-labs/fan-screen-map.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/even-labs/fan-screen-map/issues"
+  },
+  "homepage": "https://github.com/even-labs/fan-screen-map#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  }
+}

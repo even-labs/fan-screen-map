@@ -15,13 +15,15 @@ function renderMetrics(container, flowGroups, taxonomy) {
     g.flows.forEach(f => { if (f.priority === "P0") p0Count++; });
   });
 
-  const capturedCount = Object.keys(FILES).length;
+  let desktopCount = 0;
+  let iphoneCount = 0;
+  Object.values(FILES).forEach(f => { if (f.d) desktopCount++; if (f.i) iphoneCount++; });
 
   container.innerHTML = `
     <div class="metric"><div class="value">${totalScreens}</div><div class="label">Screens</div></div>
     <div class="metric"><div class="value">${totalFlows}</div><div class="label">E2E Flows</div></div>
     <div class="metric"><div class="value">${p0Count}</div><div class="label">P0 Revenue</div></div>
-    <div class="metric"><div class="value">${capturedCount}</div><div class="label">Screenshots</div></div>
+    <div class="metric"><div class="value">${desktopCount + iphoneCount}</div><div class="label">Screenshots<br><small>${desktopCount}d + ${iphoneCount}i</small></div></div>
   `;
 }
 
@@ -62,18 +64,19 @@ function renderStoryboards(container, flowGroups, files) {
         if (f.steps) {
           html += `<div class="flow-strip">`;
           f.steps.forEach(step => {
-            const fileKey = step.screen.toLowerCase().replace(/[^a-z0-9]/g, '-');
-            // Try multiple naming patterns for screenshot lookup
-            const fileEntry = files[fileKey] || files[step.screen] || null;
-            const stepIndex = f.steps.indexOf(step);
-            const paddedIndex = String(stepIndex + 1).padStart(2, '0');
+            const fileEntry = files[step.screen] || null;
             html += `<div class="flow-step"><div class="thumbs">`;
-            if (fileEntry && fileEntry.desktop) {
-              // Use the desktop- prefixed files from Playwright capture
-              const imgName = `desktop-${paddedIndex}-${fileKey}`;
-              html += `<div class="thumb desktop"><img src="desktop/${imgName}.png" alt="${step.screen} desktop" loading="lazy"></div>`;
+            // Desktop thumbnail
+            if (fileEntry && fileEntry.d) {
+              html += `<div class="thumb desktop"><img src="desktop/${fileEntry.d}.png" alt="${step.screen} desktop" loading="lazy"></div>`;
             } else {
               html += `<div class="thumb desktop placeholder"><span class="need">Capture</span><span class="route">${(step.route || '').slice(0,25)}</span></div>`;
+            }
+            // iPhone thumbnail
+            if (fileEntry && fileEntry.i) {
+              html += `<div class="thumb iphone"><img src="iphone/${fileEntry.i}.png" alt="${step.screen} iPhone" loading="lazy"></div>`;
+            } else {
+              html += `<div class="thumb iphone placeholder"><span class="need">—</span></div>`;
             }
             html += `</div>`;
             html += `<div class="label">${step.screen}</div>`;

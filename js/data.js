@@ -7,41 +7,66 @@
  */
 
 // ── Screenshot files registry ──────────────────────────────────────────
-// key = filename (without extension), value = { desktop, iphone, alt }
+// key = screen name, value = { d: desktopFile|null, i: iphoneFile|null }
+// Pattern: backstage-screen-map/js/data.js
+// Captured: 2026-04-09 via scripts/screen-map-capture.spec.ts
+// Desktop: 1440x900, iPhone: 390x844
 const FILES = {
-  "explore": { desktop: true, alt: "Explore — featured releases, categories" },
-  "releases-all": { desktop: true, alt: "All Releases — full catalog" },
-  "search": { desktop: true, alt: "Search — Algolia cross-search" },
-  "artists-all": { desktop: true, alt: "All Artists — directory" },
-  "watch": { desktop: true, alt: "Watch — video feed" },
-  "artist-twenty-one-pilots": { desktop: true, alt: "Artist Profile — Twenty One Pilots" },
-  "artist-kehlani": { desktop: true, alt: "Artist Profile — Kehlani" },
-  "release-latest": { desktop: true, alt: "Release Detail — latest release (4 tracks)" },
-  "release-doppelganger": { desktop: true, alt: "Release Detail — Doppelganger" },
-  "release-apple": { desktop: true, alt: "Release Detail — Apple (PWYW $10)" },
-  "release-debi-tirar": { desktop: true, alt: "Release Detail — Debi Tirar Mas Fotos (17 tracks)" },
-  "release-video-type": { desktop: true, alt: "Release Detail — East Atlanta Fairytale (video type)" },
-  "experience": { desktop: true, alt: "Experience Page — experience-release" },
-  "community": { desktop: true, alt: "Community Page — In Good Compenny Live 2" },
-  "experience-shortlink": { desktop: true, alt: "Experience Shortlink — /e/ route" },
-  "routing-experience": { desktop: true, alt: "Type Routing — /r/ → /experience/ redirect" },
-  "routing-community": { desktop: true, alt: "Type Routing — /r/ → /community/ redirect" },
-  "auth-login": { desktop: true, alt: "Auth — Login page (Email OTP + OAuth)" },
-  "user-library": { desktop: true, alt: "User Library — owned releases" },
-  "chats": { desktop: true, alt: "Chats List — GetStream" },
-  "checkout-apple": { desktop: true, alt: "Checkout — redirected (already purchased)" },
-  "order-legacy": { desktop: true, alt: "Legacy Order Page" },
-  "access-audio": { desktop: true, alt: "Access Audio — redirected to login (SSR)" },
-  "access-video": { desktop: true, alt: "Access Video — redirected to login (SSR)" },
-  "access-gallery": { desktop: true, alt: "Access Gallery — redirected to login (SSR)" },
-  "access-merch": { desktop: true, alt: "Access Merchandise — redirected to login (SSR)" },
-  "access-event": { desktop: true, alt: "Access Event — redirected to login (SSR)" },
-  "portal-p": { desktop: true, alt: "Portal /p/ — redirected to release" },
-  "portal-community": { desktop: true, alt: "Community Portal — redirected" },
-  "portal-experience": { desktop: true, alt: "Experience Portal — redirected" },
-  "locale-es": { desktop: true, alt: "Locale — Spanish /es/explore" },
-  "locale-ar-rtl": { desktop: true, alt: "Locale — Arabic RTL /ar/explore" },
+  // Browse (public)
+  "Explore": { d: "01-explore", i: "01-explore" },
+  "All Releases": { d: "02-releases-all", i: "02-releases-all" },
+  "Search": { d: "03-search", i: "03-search" },
+  "All Artists": { d: "04-artists-all", i: "04-artists-all" },
+  "Watch": { d: "05-watch", i: "05-watch" },
+  // Artist pages
+  "Artist: Twenty One Pilots": { d: "06-artist-twenty-one-pilots", i: "06-artist-twenty-one-pilots" },
+  "Artist: Kehlani": { d: "07-artist-kehlani", i: "07-artist-kehlani" },
+  // Release pages
+  "Release: Latest Release": { d: "08-release-latest", i: "08-release-latest" },
+  "Release: Doppelganger": { d: "09-release-doppelganger", i: "09-release-doppelganger" },
+  "Release: Apple": { d: "10-release-apple", i: "10-release-apple" },
+  "Release: Debi Tirar Mas Fotos": { d: "11-release-debi-tirar", i: "11-release-debi-tirar" },
+  "Release: East Atlanta (Video)": { d: "12-release-video-type", i: "12-release-video-type" },
+  // Experience & Community
+  "Experience Page": { d: "13-experience", i: "13-experience" },
+  "Community Page": { d: "14-community", i: "14-community" },
+  "Experience Shortlink": { d: "15-experience-shortlink", i: "15-experience-shortlink" },
+  // Type routing (redirects)
+  "Routing: Experience": { d: "16-routing-experience", i: "16-routing-experience" },
+  "Routing: Community": { d: "17-routing-community", i: "17-routing-community" },
+  // Auth
+  "Auth Login": { d: "18-auth-login", i: "18-auth-login" },
+  "Auth Onboarding": { d: "19-auth-onboarding", i: "19-auth-onboarding" },
+  // Authenticated
+  "User Library": { d: "20-user-library", i: "20-user-library" },
+  "Chats": { d: "21-chats", i: "21-chats" },
+  // Checkout
+  "Checkout (redirect)": { d: "22-checkout-apple", i: "22-checkout-apple" },
+  "Legacy Order": { d: "23-order-legacy", i: "23-order-legacy" },
+  // Access pages (redirect to auth/login from SSR — works in browser post-hydration)
+  "Access: Audio": { d: "24-access-audio", i: "24-access-audio" },
+  "Access: Video": { d: "25-access-video", i: "25-access-video" },
+  "Access: Gallery": { d: "26-access-gallery", i: "26-access-gallery" },
+  "Access: Merchandise": { d: "27-access-merch", i: "27-access-merch" },
+  "Access: Event": { d: "28-access-event", i: "28-access-event" },
+  "Access: Stems": { d: "29-access-stems", i: "29-access-stems" },
+  "Access: Album Browser": { d: "30-access-media-album", i: "30-access-media-album" },
+  // Portal pages (redirects)
+  "Portal /p/": { d: "31-portal-p", i: "31-portal-p" },
+  "Portal Community": { d: "32-portal-community", i: "32-portal-community" },
+  "Portal Experience": { d: "33-portal-experience", i: "33-portal-experience" },
+  // i18n locales
+  "Locale: English": { d: "34-locale-en", i: "34-locale-en" },
+  "Locale: Spanish": { d: "35-locale-es", i: "35-locale-es" },
+  "Locale: French": { d: "36-locale-fr", i: "36-locale-fr" },
+  "Locale: Japanese": { d: "37-locale-ja", i: "37-locale-ja" },
+  "Locale: Portuguese": { d: "38-locale-pt", i: "38-locale-pt" },
+  "Locale: Arabic (RTL)": { d: "39-locale-ar-rtl", i: "39-locale-ar-rtl" },
 };
+
+const CAPTURED = new Proxy({}, {
+  get: (_, k) => FILES[k] ? (FILES[k].d || FILES[k].i) : undefined,
+});
 
 // ── Navigation Taxonomy ────────────────────────────────────────────────
 const TAXONOMY = {
@@ -423,7 +448,7 @@ const INVESTIGATION_FINDINGS = [
   // Gaps
   { status: "gap", finding: "New env vars from main require stubs in .env.develop (ABSOUL_MAGIC_*). Each rebase can bring new vars.", date: "2026-04-08" },
   { status: "gap", finding: "NEXTAUTH_URL was missing http:// protocol — fixed locally", date: "2026-04-08" },
-  { status: "gap", finding: "Screenshots not yet captured — Playwright capture script needed against local stack", date: "2026-04-08" },
+  { status: "proven", finding: "78 screenshots captured (39 desktop 1440x900 + 39 iPhone 390x844) via Playwright capture script. 52 OK, 26 redirect, 0 errors.", date: "2026-04-09" },
 ];
 
 // ── Blocker Summary ────────────────────────────────────────────────────
