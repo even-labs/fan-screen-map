@@ -68,13 +68,13 @@ function renderStoryboards(container, flowGroups, files) {
             html += `<div class="flow-step"><div class="thumbs">`;
             // Desktop thumbnail
             if (fileEntry && fileEntry.d) {
-              html += `<div class="thumb desktop"><img src="desktop/${fileEntry.d}.png" alt="${step.screen} desktop" loading="lazy"></div>`;
+              html += `<div class="thumb desktop"><img src="desktop/${fileEntry.d}.webp" alt="${step.screen} desktop" loading="lazy"></div>`;
             } else {
               html += `<div class="thumb desktop placeholder"><span class="need">Capture</span><span class="route">${(step.route || '').slice(0,25)}</span></div>`;
             }
             // iPhone thumbnail
             if (fileEntry && fileEntry.i) {
-              html += `<div class="thumb iphone"><img src="iphone/${fileEntry.i}.png" alt="${step.screen} iPhone" loading="lazy"></div>`;
+              html += `<div class="thumb iphone"><img src="iphone/${fileEntry.i}.webp" alt="${step.screen} iPhone" loading="lazy"></div>`;
             } else {
               html += `<div class="thumb iphone placeholder"><span class="need">—</span></div>`;
             }

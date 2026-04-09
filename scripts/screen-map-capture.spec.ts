@@ -23,6 +23,7 @@ const IPHONE_DIR = path.join(OUTPUT_BASE, "iphone");
 
 const bypassSecret = process.env.E2E_AUTH_BYPASS_SECRET;
 const baseURL = process.env.BASE_URL ?? "http://localhost:3000";
+const manualAuth = process.env.MANUAL_AUTH === "true";
 
 const DESKTOP_VIEWPORT = { width: 1440, height: 900 };
 const IPHONE_VIEWPORT = { width: 390, height: 844 };
@@ -141,26 +142,40 @@ async function bypassAuth(page: import("@playwright/test").Page): Promise<void> 
  * Handles: next/image lazy loading, opacity-0→1 CSS transitions, API-driven content.
  * Does NOT use networkidle (never completes in EVEN apps due to persistent connections).
  */
-async function waitForImages(page: import("@playwright/test").Page, timeout = 5000): Promise<void> {
-  // Wait for visible images to complete (loaded OR 404 — both are img.complete=true)
+async function waitForPageReady(page: import("@playwright/test").Page): Promise<void> {
+  // 1. Wait for network to settle (works on staging; times out gracefully on local dev)
+  await Promise.race([
+    page.waitForLoadState("networkidle"),
+    page.waitForTimeout(15000),
+  ]);
+
+  // 2. Scroll to trigger lazy-loaded images, then scroll back
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
+  await page.waitForTimeout(500);
+  await page.evaluate(() => window.scrollTo(0, 0));
+
+  // 3. Wait for visible images to be fully rendered (opacity > 0)
   await page
     .waitForFunction(
       () => {
-        const images = Array.from(document.querySelectorAll("img[src]"));
-        if (images.length === 0) return true;
-        const visible = images.filter((img) => {
+        const imgs = Array.from(document.querySelectorAll("img"));
+        if (imgs.length === 0) return true;
+        const visible = imgs.filter((img) => {
           const rect = img.getBoundingClientRect();
-          return rect.top < window.innerHeight && rect.width > 0;
+          return rect.top < window.innerHeight * 1.5 && rect.width > 0;
         });
         if (visible.length === 0) return true;
-        return visible.every((img) => (img as HTMLImageElement).complete);
+        return visible.every((img) => {
+          const style = window.getComputedStyle(img);
+          return (img as HTMLImageElement).complete && style.opacity !== "0";
+        });
       },
-      { timeout },
+      { timeout: 10000 },
     )
-    .catch(() => {}); // timeout = capture anyway
+    .catch(() => {});
 
-  // Buffer for CSS opacity transitions (next/image onLoadingComplete)
-  await page.waitForTimeout(400);
+  // 4. Final buffer for CSS transitions
+  await page.waitForTimeout(500);
 }
 
 interface CaptureResult {
@@ -197,8 +212,8 @@ async function captureScreen(
         .catch(() => {});
     }
 
-    // Always wait for images to load (handles next/image lazy loading + API-driven content)
-    await waitForImages(page);
+    // Wait for network + images + transitions before capturing
+    await waitForPageReady(page);
 
     await page.screenshot({
       path: path.join(outDir, `${screen.name}.png`),
@@ -232,9 +247,16 @@ test.describe("Fan Screen Map Capture", () => {
   });
 
   test("capture all screens — desktop 1440x900 + iPhone 390x844", async ({ page }) => {
-    // Authenticate
     await page.setViewportSize(DESKTOP_VIEWPORT);
-    await bypassAuth(page);
+
+    if (manualAuth) {
+      // Navigate to explore and pause for manual login
+      await page.goto("/explore", { waitUntil: "domcontentloaded" });
+      console.log("\n⏸  MANUAL AUTH: Log in via the browser, then press Resume in the Playwright inspector.\n");
+      await page.pause(); // Opens Playwright inspector — click Resume after logging in
+    } else {
+      await bypassAuth(page);
+    }
 
     const results: CaptureResult[] = [];
 

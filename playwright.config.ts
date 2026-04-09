@@ -1,6 +1,10 @@
 /**
  * Playwright config for fan-screen-map capture script.
  * Minimal — only used to run scripts/screen-map-capture.spec.ts
+ *
+ * Usage:
+ *   Local:   E2E_AUTH_BYPASS_SECRET=<secret> npx playwright test
+ *   Staging: BASE_URL=https://even-x-git-staging.even.biz MANUAL_AUTH=true npx playwright test --headed
  */
 import { defineConfig, devices } from "@playwright/test";
 
@@ -9,7 +13,7 @@ const baseURL = process.env.BASE_URL ?? `http://localhost:${port}`;
 
 export default defineConfig({
   testDir: "./scripts",
-  timeout: 600_000,
+  timeout: 1_200_000,
   use: {
     baseURL,
     ...devices["Desktop Chrome"],
