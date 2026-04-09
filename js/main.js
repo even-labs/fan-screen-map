@@ -1,15 +1,46 @@
 /**
- * Main — Fan Screen Map Entry Point (v0.1.0)
- * Depends on: data.js, render.js (loaded in order via <script> tags)
+ * Main — Fan Screen Map Entry Point
+ * Depends on: data.js, render.js, mermaid, svg-pan-zoom (loaded via <script> tags)
  */
 document.addEventListener('DOMContentLoaded', () => {
-  mermaid.initialize({ theme: 'dark', startOnLoad: true });
+  mermaid.initialize({
+    theme: 'dark',
+    startOnLoad: false,
+    flowchart: {
+      curve: 'basis',
+      padding: 20,
+      nodeSpacing: 30,
+      rankSpacing: 60,
+      useMaxWidth: false,
+    },
+  });
 
   renderMetrics(document.getElementById('metrics'), FLOW_GROUPS, TAXONOMY);
   renderFindings(document.getElementById('findings'), INVESTIGATION_FINDINGS);
   renderStoryboards(document.getElementById('storyboards'), FLOW_GROUPS, FILES);
   renderBlockers(document.getElementById('blockers'), BLOCKERS);
   renderTaxonomy(document.getElementById('taxonomy'), TAXONOMY);
+
+  // Render Mermaid then attach svg-pan-zoom
+  mermaid.run().then(() => {
+    document.querySelectorAll('.mermaid svg').forEach((svg) => {
+      svg.setAttribute('width', '100%');
+      svg.setAttribute('height', '500');
+
+      if (typeof svgPanZoom !== 'undefined') {
+        svgPanZoom(svg, {
+          zoomEnabled: true,
+          panEnabled: true,
+          controlIconsEnabled: true,
+          fit: true,
+          center: true,
+          minZoom: 0.3,
+          maxZoom: 10,
+          zoomScaleSensitivity: 0.3,
+        });
+      }
+    });
+  });
 
   // Lightbox — click thumbnail to preview full size
   const lb = document.getElementById('lightbox');

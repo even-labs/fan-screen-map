@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/layout.css">
   <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
 </head>
 <body>
 
@@ -30,83 +31,99 @@
   <!-- Section 1: Navigation Architecture -->
   <div class="section">
     <h2>1. Navigation architecture</h2>
+    <div class="mermaid-container">
     <pre class="mermaid">
-flowchart TD
-    subgraph public["Public (no auth)"]
-        explore["Explore\n/explore"]
-        releases["All Releases\n/releases/all"]
-        artists["All Artists\n/artists/all"]
-        search["Search\n/search"]
-        watch["Watch\n/watch"]
-        artist["Artist Profile\n/artists/[slug]"]
-        collection["Artist Collection\n/artists/[slug]/collection/[id]"]
-        release["Release Page\n/r/[slug]"]
-        experience["Experience Page\n/experience/[slug]"]
-        community["Community Page\n/community/[slug]"]
-        shortlink_e["Shortlink /e/[slug]"]
-        shortlink_ep["Shortlink /ep/[slug]"]
-        droplink["Drop Link\n/l/[slug]"]
-    end
-
-    subgraph auth["Auth"]
+flowchart LR
+    subgraph AUTH["Auth"]
+        direction TB
         login["Login\n/auth/login"]
-        onboarding["Onboarding\n/auth/onboarding"]
+        onboarding["Onboarding"]
+        login --> onboarding
     end
 
-    subgraph checkout["Checkout (auth required)"]
+    subgraph BROWSE["Browse (public)"]
+        direction TB
+        explore["Explore\n/explore"]
+        releases["All Releases"]
+        artists["All Artists"]
+        search["Search"]
+        watch["Watch"]
+        explore --> releases & artists & search & watch
+    end
+
+    subgraph DISCOVER["Discover"]
+        direction TB
+        artist["Artist Profile\n/artists/[slug]"]
+        collection["Collection\n/collection/[id]"]
+        release["Release Page\n/r/[slug]"]
+        experience["Experience\n/experience/[slug]"]
+        community["Community\n/community/[slug]"]
+        artist --> collection
+        artist --> release
+    end
+
+    subgraph PURCHASE["Checkout"]
+        direction TB
         checkout_page["Checkout\n/checkout/[slug]"]
         stripe["Stripe (external)"]
-        confirmation_exp["Experience Confirmation"]
-        confirmation_com["Community Confirmation"]
-        order_legacy["Legacy Order\n/releases/order/[slug]"]
+        confirmation["Confirmation"]
+        checkout_page --> stripe --> confirmation
     end
 
-    subgraph portal["Portal (post-purchase)"]
-        portal_p["/p/[slug]"]
-        portal_exp["Experience Portal\n/experience/portal/[slug]"]
-        portal_com["Community Portal\n/community/portal/[slug]"]
+    subgraph PORTAL["Portal (post-purchase)"]
+        direction TB
+        portal_p["Portal /p/"]
+        portal_exp["Experience Portal"]
+        portal_com["Community Portal"]
     end
 
-    subgraph access["Access Content (auth + purchase)"]
-        audio["Audio Player\n/access/audio/[slug]"]
-        video["Video Player\n/access/video/[slug]"]
-        gallery["Gallery\n/access/gallery/[slug]"]
-        merch["Merchandise\n/access/merchandise/[slug]"]
-        event["Event RSVP\n/access/event/[slug]"]
-        stems["Stems\n/access/stems/[slug]"]
-        document["Document\n/access/document/[slug]"]
-        campaign["Campaign\n/access/campaign/[slug]"]
+    subgraph ACCESS["Access Content"]
+        direction TB
+        audio["Audio Player"]
+        video["Video Player"]
+        gallery["Gallery"]
+        merch["Merchandise"]
+        event["Event RSVP"]
+        stems["Stems"]
+        document["Document"]
+        campaign["Campaign"]
     end
 
-    subgraph user["User (auth required)"]
+    subgraph USER["User"]
+        direction TB
         library["Library\n/users"]
-        chats["Chats\n/chats"]
-        chat_thread["Chat Thread\n/chats/[slug]"]
-        menu["Mobile Menu\n/menu"]
+        chats["Chats"]
+        menu["Mobile Menu"]
     end
 
-    explore --> releases & artists & search & watch
-    artists --> artist --> collection
-    artist --> release
-    explore --> release
-    release --> checkout_page --> stripe --> confirmation_com & confirmation_exp
+    subgraph SHORTCUTS["Shortcuts"]
+        direction TB
+        shortlink_e["/e/[slug]"]
+        shortlink_ep["/ep/[slug]"]
+        droplink["/l/[slug]"]
+    end
+
+    AUTH -->|authenticated| BROWSE
+    BROWSE --> DISCOVER
+    DISCOVER -->|purchase| PURCHASE
+    PURCHASE --> PORTAL
+    PORTAL --> ACCESS
+    library --> portal_p
+    release --> checkout_page
     release --> experience & community
     shortlink_e --> experience
     shortlink_ep --> portal_exp
-    portal_p --> audio & video & gallery & merch & event & stems & document & campaign
-    portal_com --> audio & video & gallery & merch
-    portal_exp --> video
-    library --> portal_p
-    chats --> chat_thread
-    login --> onboarding --> explore
 
-    style public fill:#1a1a2e,stroke:#e74c3c,color:#fff
-    style auth fill:#1a1a2e,stroke:#f39c12,color:#fff
-    style checkout fill:#1a1a2e,stroke:#e74c3c,color:#fff
-    style portal fill:#1a1a2e,stroke:#3498db,color:#fff
-    style access fill:#1a1a2e,stroke:#9b59b6,color:#fff
-    style user fill:#1a1a2e,stroke:#2ecc71,color:#fff
+    style AUTH fill:#1a1a2e,stroke:#f39c12,color:#fff
+    style BROWSE fill:#1a1a2e,stroke:#e74c3c,color:#fff
+    style DISCOVER fill:#1a1a2e,stroke:#e74c3c,color:#fff
+    style PURCHASE fill:#1a1a2e,stroke:#e74c3c,color:#fff
+    style PORTAL fill:#1a1a2e,stroke:#3498db,color:#fff
+    style ACCESS fill:#1a1a2e,stroke:#9b59b6,color:#fff
+    style USER fill:#1a1a2e,stroke:#2ecc71,color:#fff
+    style SHORTCUTS fill:#1a1a2e,stroke:#95a5a6,color:#fff
     </pre>
+    </div>
   </div>
 
   <!-- Section 2: About -->

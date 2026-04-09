@@ -26,7 +26,11 @@
 .section p { font-size: 13px; line-height: 1.6; color: var(--color-muted); margin-bottom: 10px; }
 
 /* Mermaid */
-.mermaid { display: flex; justify-content: center; overflow-x: auto; }
+/* Mermaid diagram container with zoom/pan */
+.mermaid-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; min-height: 400px; position: relative; background: var(--color-surface); }
+.mermaid { display: block; width: 100%; min-height: 400px; }
+.mermaid svg { cursor: grab; }
+.mermaid svg:active { cursor: grabbing; }
 
 /* Flow Cards */
 .flow-card { background: var(--color-surface-alt); border: 1px solid var(--color-border); border-radius: var(--radius-lg); margin-bottom: var(--space-4); overflow: hidden; }
