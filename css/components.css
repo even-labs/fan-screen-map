@@ -1,0 +1,86 @@
+/* Components — Tags, metrics, flow cards, phases, taxonomy */
+
+/* Tags */
+.tag { display: inline-block; padding: 2px 7px; border-radius: var(--radius-sm); font-size: 10px; font-weight: 600; white-space: nowrap; }
+.tag-p0 { background: rgba(231,76,60,.25); color: var(--color-p0); }
+.tag-p1 { background: rgba(230,126,34,.25); color: var(--color-p1); }
+.tag-p2 { background: rgba(52,152,219,.2); color: var(--color-p2); }
+.tag-p3 { background: rgba(149,165,166,.2); color: var(--color-p3); }
+.tag-l0 { background: rgba(52,152,219,.15); color: var(--color-p2); }
+.tag-l1 { background: rgba(46,204,113,.15); color: var(--color-done); }
+.tag-l2 { background: rgba(230,126,34,.15); color: var(--color-p1); }
+.tag-l3 { background: rgba(231,76,60,.15); color: var(--color-p0); }
+.tag-fs { background: rgba(155,89,182,.15); color: var(--color-info); }
+.tag-modal { background: rgba(149,165,166,.15); color: var(--color-p3); }
+.tag-done { background: rgba(46,204,113,.25); color: var(--color-done); }
+.tag-suite { background: rgba(255,255,255,.05); color: var(--color-muted); }
+
+/* Metrics */
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); margin-bottom: var(--space-8); }
+.metric { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); text-align: center; }
+.metric .value { font-size: 32px; font-weight: 700; color: var(--color-accent); }
+.metric .label { font-size: 11px; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: var(--space-1); }
+
+/* Sections */
+.section { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: 28px; margin-bottom: var(--space-8); }
+.section p { font-size: 13px; line-height: 1.6; color: var(--color-muted); margin-bottom: 10px; }
+
+/* Mermaid */
+.mermaid { display: flex; justify-content: center; overflow-x: auto; }
+
+/* Flow Cards */
+.flow-card { background: var(--color-surface-alt); border: 1px solid var(--color-border); border-radius: var(--radius-lg); margin-bottom: var(--space-4); overflow: hidden; }
+.flow-card.p0 { border-left: 3px solid var(--color-p0); }
+.flow-card.p1 { border-left: 3px solid var(--color-p1); }
+.flow-card.p2 { border-left: 3px solid var(--color-p2); }
+.flow-card.p3 { border-left: 3px solid #555; }
+
+.flow-header { padding: var(--space-3) var(--space-4); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--color-border); }
+.flow-header .name { font-weight: 600; font-size: 14px; flex: 1; }
+.flow-header .meta { display: flex; gap: 6px; align-items: center; }
+
+/* Flow Strip */
+.flow-strip { display: flex; overflow-x: auto; padding: var(--space-4); gap: 0; align-items: flex-start; }
+.flow-step { flex: 0 0 220px; text-align: center; position: relative; }
+.flow-step:not(:last-child) { margin-right: var(--space-6); }
+.flow-step:not(:last-child)::after { content: '>'; position: absolute; right: -18px; top: 55px; color: var(--color-muted); font-size: 18px; font-weight: 700; }
+
+.flow-step .thumbs { display: flex; gap: 4px; justify-content: center; margin-bottom: 6px; }
+.flow-step .thumb { border-radius: var(--radius-md); border: 1px solid var(--color-border); overflow: hidden; background: var(--color-bg); }
+.flow-step .thumb.desktop { width: 150px; height: 94px; }
+.flow-step .thumb.iphone { width: 46px; height: 94px; }
+.flow-step .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.flow-step .thumb.placeholder { border: 2px dashed #555; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px; }
+.flow-step .thumb.placeholder .need { font-size: 7px; color: var(--color-p0); font-weight: 700; text-transform: uppercase; }
+.flow-step .thumb.placeholder .route { font-size: 7px; color: var(--color-muted); font-family: var(--font-mono); word-break: break-all; padding: 0 2px; }
+.flow-step .label { font-size: 11px; color: var(--color-text); line-height: 1.3; }
+.flow-step .level { font-size: 9px; color: var(--color-muted); }
+
+/* Flow Details (collapsible) */
+.flow-details { padding: 0 var(--space-4) var(--space-3); }
+.flow-details summary { font-size: 12px; color: var(--color-muted); cursor: pointer; padding: 4px 0; }
+.flow-details summary:hover { color: var(--color-accent); }
+.flow-details .content { font-size: 12px; color: var(--color-muted); padding: 8px 0 4px 12px; border-left: 2px solid var(--color-border); }
+.flow-details .content li { margin: 3px 0; }
+
+/* Phases */
+.phase { border-left: 3px solid var(--color-accent); padding: var(--space-3) 0 var(--space-3) var(--space-4); margin: var(--space-3) 0; }
+.phase h4 { font-size: 13px; margin-bottom: 6px; }
+.phase p { font-size: 12px; color: var(--color-muted); }
+.phase ul { font-size: 12px; padding-left: var(--space-4); margin: 6px 0; }
+.phase li { margin: 3px 0; }
+.phase.p1 { border-color: var(--color-p1); }
+.phase.p2 { border-color: var(--color-p2); }
+
+/* Lightbox */
+.lightbox { display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,.92); align-items:center; justify-content:center; cursor:zoom-out; backdrop-filter:blur(4px); }
+.lightbox.active { display:flex; }
+.lightbox img { max-width:92vw; max-height:90vh; border-radius: var(--radius-lg); box-shadow: 0 8px 40px rgba(0,0,0,.6); }
+.lightbox .caption { position:absolute; bottom:24px; left:50%; transform:translateX(-50%); color:var(--color-muted); font-size:12px; background:rgba(0,0,0,.7); padding:6px 16px; border-radius:var(--radius-md); white-space:nowrap; }
+.lightbox .close { position:absolute; top:20px; right:24px; color:var(--color-muted); font-size:28px; cursor:pointer; background:none; border:none; font-family:var(--font-sans); }
+.lightbox .close:hover { color:var(--color-text); }
+.flow-step .thumb:not(.placeholder) { cursor:zoom-in; }
+
+/* Taxonomy toggle */
+.taxonomy-toggle { font-size: 14px; cursor: pointer; padding: 8px 0; color: var(--color-accent); font-weight: 600; }
+.taxonomy-toggle:hover { text-decoration: underline; }

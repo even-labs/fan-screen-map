@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVEN Fan App — Screen Map &amp; E2E Flow Proposal</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <img src="assets/even-white-logo.png" alt="EVEN" style="height:28px">
+    <div>
+      <h1>Fan App — Screen Map &amp; E2E Flow Proposal</h1>
+      <p class="subtitle">DRAFT v0.1.0 — Pending leadership review</p>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- Metrics -->
+  <div class="metrics" id="metrics"></div>
+
+  <!-- Section 1: About -->
+  <div class="section">
+    <h2>1. About this document</h2>
+    <p>This document maps every fan-facing screen in <strong>even-web</strong> (legacy fan app at app.even.biz / www.even.biz) and proposes E2E test flows for the <strong>E2E Validation Gate</strong> initiative.</p>
+    <p>Built from a local stack investigation: even-web (localhost:3000) connected to even-back Docker (localhost:5000) with staging DB (1,120 users, 681 releases). All findings are <strong>proven, not assumed</strong>.</p>
+    <p><strong>Purpose:</strong> Align team on screen naming, E2E test scope, and priority before writing test code. Same approach used for <a href="https://even-labs.github.io/backstage-screen-map/" style="color:var(--color-accent)">Backstage Screen Map</a>.</p>
+  </div>
+
+  <!-- Section 2: Investigation Findings -->
+  <div class="section">
+    <h2>2. Local investigation findings (2026-04-08)</h2>
+    <div id="findings"></div>
+  </div>
+
+  <!-- Section 3: E2E Flow Storyboards -->
+  <div class="section">
+    <h2>3. E2E flow storyboards</h2>
+    <p>31 flows across 8 groups. Priority: <span class="tag tag-p0">P0</span> Revenue &middot; <span class="tag tag-p1">P1</span> Auth/Core &middot; <span class="tag tag-p2">P2</span> Features &middot; <span class="tag tag-p3">P3</span> Edge Cases</p>
+    <div id="storyboards"></div>
+  </div>
+
+  <!-- Section 4: Blockers -->
+  <div class="section">
+    <h2>4. Blockers &amp; mitigations</h2>
+    <div id="blockers"></div>
+  </div>
+
+  <!-- Section 5: Navigation Taxonomy -->
+  <div class="section">
+    <h2>5. Complete navigation taxonomy</h2>
+    <details>
+      <summary class="taxonomy-toggle">Expand full taxonomy (~52 screens)</summary>
+      <div id="taxonomy"></div>
+    </details>
+  </div>
+
+  <!-- Section 6: Phased Rollout -->
+  <div class="section">
+    <h2>6. Phased rollout</h2>
+    <div class="phase">
+      <h4>Phase 1: Foundation (5 specs) — Blocks EWM-M1</h4>
+      <ul>
+        <li>Smoke: app loads against local backend</li>
+        <li>Auth bypass: E2E bypass creates session (proven working)</li>
+        <li>Session persistence: survives navigation + refresh</li>
+        <li>Release page: /r/[slug] renders (after mediaURL fix)</li>
+        <li>Explore page: /explore loads with releases</li>
+      </ul>
+    </div>
+    <div class="phase p1">
+      <h4>Phase 2: Core Flows (+ 3 specs) — Blocks EWM-M2/M3</h4>
+      <ul>
+        <li>Artist profile: /artists/[slug] renders with releases</li>
+        <li>Auth redirect: unauthenticated → login → return to page</li>
+        <li>Library: /users shows owned releases</li>
+      </ul>
+    </div>
+    <div class="phase p2">
+      <h4>Phase 3: Revenue (+ 3 specs) — Blocks EWM-M6</h4>
+      <ul>
+        <li>Checkout visual: /checkout/[slug] renders with tiers</li>
+        <li>Post-purchase portal: access content visible</li>
+        <li>Audio player: player component renders with track list</li>
+      </ul>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>EVEN Fan App Screen Map &mdash; DRAFT v0.1.0 &mdash; 2026-04-08 &mdash; Celsius Aray</p>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="close" id="lightbox-close">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+  <div class="caption" id="lightbox-caption"></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
