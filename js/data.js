@@ -162,10 +162,10 @@ const FLOW_GROUPS = [
         blocker: "Magic SDK (external)",
         steps: [
           { screen: "Explore", route: "/explore", level: "L0" },
-          { screen: "Login", route: "/auth/login", level: "L0" },
-          { screen: "OTP Verification", route: "/auth/login", level: "L0" },
-          { screen: "Onboarding (conditional)", route: "/auth/onboarding", level: "FS" },
-          { screen: "Redirect to Explore", route: "/explore", level: "L0" },
+          { screen: "Auth Login", route: "/auth/login", level: "L0" },
+          { screen: "Auth Login", route: "/auth/login", level: "L0", note: "OTP input state" },
+          { screen: "Auth Onboarding", route: "/auth/onboarding", level: "FS" },
+          { screen: "Explore", route: "/explore", level: "L0" },
         ],
         assertions: ["Session created", "User redirected", "auth_completed PostHog event"]
       },
@@ -173,9 +173,9 @@ const FLOW_GROUPS = [
         id: 2, name: "Inline Auth at Checkout", priority: "P0", suite: "Auth", complexity: "Complex",
         blocker: "Magic SDK + Stripe",
         steps: [
-          { screen: "Release Page", route: "/r/[slug]", level: "L1" },
-          { screen: "Inline Auth Modal", route: "/r/[slug]", level: "L1" },
-          { screen: "Stripe Checkout", route: "external", level: "FS" },
+          { screen: "Release: Latest Release", route: "/r/[slug]", level: "L1" },
+          { screen: "Auth Login", route: "/r/[slug]", level: "L1", note: "inline modal" },
+          { screen: "Stripe Checkout", route: "external", level: "FS", note: "external" },
         ],
         assertions: ["Auth + checkout in single flow", "No navigation to /auth/login"]
       },
@@ -183,9 +183,9 @@ const FLOW_GROUPS = [
         id: 3, name: "E2E Bypass Auth (CI)", priority: "P0", suite: "Auth", complexity: "Simple",
         blocker: "None (bypass implemented)",
         steps: [
-          { screen: "CSRF Token", route: "/api/auth/csrf", level: "-" },
-          { screen: "Credentials Callback", route: "/api/auth/callback/credentials", level: "-" },
-          { screen: "Session Active", route: "/explore", level: "L0" },
+          { screen: "CSRF Token", route: "/api/auth/csrf", level: "-", note: "API call" },
+          { screen: "Credentials Callback", route: "/api/auth/callback/credentials", level: "-", note: "API call" },
+          { screen: "Explore", route: "/explore", level: "L0" },
         ],
         assertions: ["Session cookie set", "walletAddress in session", "No Magic SDK calls"]
       },
@@ -193,10 +193,10 @@ const FLOW_GROUPS = [
         id: 4, name: "Session Persistence", priority: "P1", suite: "Auth", complexity: "Simple",
         blocker: "None",
         steps: [
-          { screen: "Login (bypass)", route: "/api/auth/callback/credentials", level: "-" },
+          { screen: "Auth Login", route: "/api/auth/callback/credentials", level: "-", note: "bypass" },
           { screen: "Explore", route: "/explore", level: "L0" },
-          { screen: "Release Page", route: "/r/[slug]", level: "L1" },
-          { screen: "Refresh Page", route: "/r/[slug]", level: "L1" },
+          { screen: "Release: Latest Release", route: "/r/[slug]", level: "L1" },
+          { screen: "Release: Latest Release", route: "/r/[slug]", level: "L1", note: "after refresh" },
         ],
         assertions: ["Session persists across navigation", "Session survives refresh"]
       },
@@ -204,9 +204,9 @@ const FLOW_GROUPS = [
         id: 5, name: "Logout", priority: "P3", suite: "Auth", complexity: "Simple",
         blocker: "None",
         steps: [
-          { screen: "Any Auth Page", route: "/users", level: "L0" },
-          { screen: "Logout Action", route: "/", level: "-" },
-          { screen: "Explore (logged out)", route: "/explore", level: "L0" },
+          { screen: "User Library", route: "/users", level: "L0" },
+          { screen: "Logout Action", route: "/", level: "-", note: "action" },
+          { screen: "Explore", route: "/explore", level: "L0" },
         ],
         assertions: ["Session destroyed", "Redirected to explore"]
       },
@@ -229,7 +229,7 @@ const FLOW_GROUPS = [
         blocker: "Algolia (external)",
         steps: [
           { screen: "Search", route: "/search", level: "L1" },
-          { screen: "Result Click", route: "/artists/[slug]", level: "L1" },
+          { screen: "Artist: Twenty One Pilots", route: "/artists/[slug]", level: "L1" },
         ],
         assertions: ["Results appear on type", "Navigation to detail works"]
       },
@@ -238,8 +238,8 @@ const FLOW_GROUPS = [
         blocker: "None",
         steps: [
           { screen: "All Artists", route: "/artists/all", level: "L1" },
-          { screen: "Artist Profile", route: "/artists/[slug]", level: "L1" },
-          { screen: "Click Release", route: "/r/[slug]", level: "L1" },
+          { screen: "Artist: Twenty One Pilots", route: "/artists/[slug]", level: "L1" },
+          { screen: "Release: Latest Release", route: "/r/[slug]", level: "L1" },
         ],
         assertions: ["Tabs switch", "Release cards link correctly"]
       },
@@ -253,7 +253,7 @@ const FLOW_GROUPS = [
         id: 9, name: "View Music Release", priority: "P2", suite: "Releases", complexity: "Medium",
         blocker: "CloudFront (audio preview)",
         steps: [
-          { screen: "Release Page", route: "/r/[slug]", level: "L1" },
+          { screen: "Release: Latest Release", route: "/r/[slug]", level: "L1" },
         ],
         assertions: ["Tiers render with prices", "Track list visible", "Artist info present"]
       },
@@ -283,10 +283,10 @@ const FLOW_GROUPS = [
         id: 12, name: "Standard Tier Purchase", priority: "P0", suite: "Payments", complexity: "Complex",
         blocker: "Stripe (test mode)",
         steps: [
-          { screen: "Release Page", route: "/r/[slug]", level: "L1" },
-          { screen: "Checkout Page", route: "/checkout/[slug]", level: "FS" },
-          { screen: "Stripe Checkout", route: "external", level: "FS" },
-          { screen: "Confirmation", route: "/community/confirmation/[slug]", level: "FS" },
+          { screen: "Release: Latest Release", route: "/r/[slug]", level: "L1" },
+          { screen: "Checkout (redirect)", route: "/checkout/[slug]", level: "FS" },
+          { screen: "Stripe Checkout", route: "external", level: "FS", note: "external" },
+          { screen: "Confirmation", route: "/community/confirmation/[slug]", level: "FS", note: "not yet captured" },
         ],
         assertions: ["checkout_initiated fired", "Purchase created", "Access granted"]
       },
@@ -294,9 +294,9 @@ const FLOW_GROUPS = [
         id: 13, name: "Free Release Acquisition", priority: "P1", suite: "Payments", complexity: "Medium",
         blocker: "None",
         steps: [
-          { screen: "Release Page (free)", route: "/r/[slug]", level: "L1" },
-          { screen: "Get Access Click", route: "/r/[slug]", level: "L1" },
-          { screen: "Confirmation", route: "/community/confirmation/[slug]", level: "FS" },
+          { screen: "Release: Latest Release", route: "/r/[slug]", level: "L1", note: "free tier" },
+          { screen: "Get Access Click", route: "/r/[slug]", level: "L1", note: "button action" },
+          { screen: "Confirmation", route: "/community/confirmation/[slug]", level: "FS", note: "not yet captured" },
         ],
         assertions: ["No Stripe session", "Access granted immediately"]
       },
@@ -304,9 +304,9 @@ const FLOW_GROUPS = [
         id: 14, name: "Gift Purchase", priority: "P1", suite: "Payments", complexity: "Complex",
         blocker: "Stripe",
         steps: [
-          { screen: "Release Page", route: "/r/[slug]", level: "L1" },
-          { screen: "Checkout (Gift Form)", route: "/checkout/[slug]", level: "FS" },
-          { screen: "Stripe Checkout", route: "external", level: "FS" },
+          { screen: "Release: Latest Release", route: "/r/[slug]", level: "L1" },
+          { screen: "Checkout (redirect)", route: "/checkout/[slug]", level: "FS", note: "gift form" },
+          { screen: "Stripe Checkout", route: "external", level: "FS", note: "external" },
         ],
         assertions: ["Gift form validates", "Recipient email captured", "Gift email sent"]
       },
@@ -314,8 +314,8 @@ const FLOW_GROUPS = [
         id: 15, name: "Waitlist Join", priority: "P2", suite: "Releases", complexity: "Simple",
         blocker: "None",
         steps: [
-          { screen: "Release Page (waitlist)", route: "/r/[slug]", level: "L1" },
-          { screen: "Waitlist Form Submit", route: "/r/[slug]", level: "L1" },
+          { screen: "Release: Latest Release", route: "/r/[slug]", level: "L1", note: "waitlist state" },
+          { screen: "Waitlist Form Submit", route: "/r/[slug]", level: "L1", note: "form action" },
         ],
         assertions: ["waitlist_joined fired", "Form submission succeeds"]
       },
@@ -329,8 +329,8 @@ const FLOW_GROUPS = [
         id: 16, name: "Play Audio Album", priority: "P0", suite: "Content", complexity: "Medium",
         blocker: "CloudFront (audio CDN)",
         steps: [
-          { screen: "Portal", route: "/community/portal/[slug]", level: "L2" },
-          { screen: "Audio Player", route: "/access/audio/[slug]", level: "L2" },
+          { screen: "Portal Community", route: "/community/portal/[slug]", level: "L2" },
+          { screen: "Access: Audio", route: "/access/audio/[slug]", level: "L2" },
         ],
         assertions: ["Audio streams", "Track switching works", "song_played fired"]
       },
@@ -338,8 +338,8 @@ const FLOW_GROUPS = [
         id: 17, name: "Watch Video Content", priority: "P0", suite: "Content", complexity: "Medium",
         blocker: "Mux (video CDN)",
         steps: [
-          { screen: "Portal", route: "/experience/portal/[slug]", level: "L2" },
-          { screen: "Video Player", route: "/access/video/[slug]", level: "L2" },
+          { screen: "Portal Experience", route: "/experience/portal/[slug]", level: "L2" },
+          { screen: "Access: Video", route: "/access/video/[slug]", level: "L2" },
         ],
         assertions: ["Mux player loads", "Video plays", "video_playback_started fired"]
       },
@@ -347,9 +347,9 @@ const FLOW_GROUPS = [
         id: 18, name: "Claim Merchandise", priority: "P1", suite: "Content", complexity: "Complex",
         blocker: "Shipping form",
         steps: [
-          { screen: "Portal", route: "/community/portal/[slug]", level: "L2" },
-          { screen: "Merchandise Page", route: "/access/merchandise/[slug]", level: "L2" },
-          { screen: "Shipping Form", route: "/access/merchandise/[slug]", level: "L2" },
+          { screen: "Portal Community", route: "/community/portal/[slug]", level: "L2" },
+          { screen: "Access: Merchandise", route: "/access/merchandise/[slug]", level: "L2" },
+          { screen: "Access: Merchandise", route: "/access/merchandise/[slug]", level: "L2", note: "shipping form" },
         ],
         assertions: ["Form validates", "Claim submitted", "merch_claim_completed fired"]
       },
@@ -363,8 +363,8 @@ const FLOW_GROUPS = [
         id: 19, name: "Release Chat", priority: "P2", suite: "Chat", complexity: "Medium",
         blocker: "GetStream (external)",
         steps: [
-          { screen: "Chats List", route: "/chats", level: "L0" },
-          { screen: "Chat Thread", route: "/chats/[slug]", level: "L1" },
+          { screen: "Chats", route: "/chats", level: "L0" },
+          { screen: "Chats", route: "/chats/[slug]", level: "L1", note: "thread view" },
         ],
         assertions: ["Chat loads", "Messages render", "Can send message"]
       },
@@ -392,8 +392,8 @@ const FLOW_GROUPS = [
         id: 21, name: "Visit Drop Link", priority: "P2", suite: "Drop Links", complexity: "Medium",
         blocker: "None",
         steps: [
-          { screen: "Drop Link Page", route: "/l/[slug]", level: "L1" },
-          { screen: "Email Form Submit", route: "/l/[slug]", level: "L1" },
+          { screen: "Drop Link Page", route: "/l/[slug]", level: "L1", note: "not yet captured (404)" },
+          { screen: "Drop Link Page", route: "/l/[slug]", level: "L1", note: "form action" },
         ],
         assertions: ["drop_link_viewed fired", "Form submits", "Social links functional"]
       },
@@ -401,8 +401,8 @@ const FLOW_GROUPS = [
         id: 22, name: "Studio Claim Code", priority: "P2", suite: "Releases", complexity: "Medium",
         blocker: "Claim code system",
         steps: [
-          { screen: "Release with code", route: "/r/[slug]?code=XXXX", level: "L1" },
-          { screen: "Code processed", route: "/p/[slug]", level: "L1" },
+          { screen: "Release: Latest Release", route: "/r/[slug]?code=XXXX", level: "L1", note: "with claim code" },
+          { screen: "Portal /p/", route: "/p/[slug]", level: "L1" },
         ],
         assertions: ["Claim code processed server-side", "Access granted without payment"]
       },

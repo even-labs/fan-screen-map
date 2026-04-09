@@ -136,6 +136,33 @@ async function bypassAuth(page: import("@playwright/test").Page): Promise<void> 
   console.log(`Auth OK: ${session.user.email}`);
 }
 
+/**
+ * Wait for viewport-visible images to finish loading.
+ * Handles: next/image lazy loading, opacity-0→1 CSS transitions, API-driven content.
+ * Does NOT use networkidle (never completes in EVEN apps due to persistent connections).
+ */
+async function waitForImages(page: import("@playwright/test").Page, timeout = 5000): Promise<void> {
+  // Wait for visible images to complete (loaded OR 404 — both are img.complete=true)
+  await page
+    .waitForFunction(
+      () => {
+        const images = Array.from(document.querySelectorAll("img[src]"));
+        if (images.length === 0) return true;
+        const visible = images.filter((img) => {
+          const rect = img.getBoundingClientRect();
+          return rect.top < window.innerHeight && rect.width > 0;
+        });
+        if (visible.length === 0) return true;
+        return visible.every((img) => (img as HTMLImageElement).complete);
+      },
+      { timeout },
+    )
+    .catch(() => {}); // timeout = capture anyway
+
+  // Buffer for CSS opacity transitions (next/image onLoadingComplete)
+  await page.waitForTimeout(400);
+}
+
 interface CaptureResult {
   screen: string;
   viewport: string;
@@ -157,7 +184,7 @@ async function captureScreen(
   try {
     const response = await page.goto(screen.path, {
       waitUntil: "domcontentloaded",
-      timeout: 30000,
+      timeout: 20000,
     });
 
     const httpCode = response?.status() ?? "timeout";
@@ -168,9 +195,10 @@ async function captureScreen(
         .first()
         .waitFor({ state: "visible", timeout: 10000 })
         .catch(() => {});
-    } else {
-      await page.waitForTimeout(2000);
     }
+
+    // Always wait for images to load (handles next/image lazy loading + API-driven content)
+    await waitForImages(page);
 
     await page.screenshot({
       path: path.join(outDir, `${screen.name}.png`),
@@ -196,7 +224,7 @@ async function captureScreen(
 }
 
 test.describe("Fan Screen Map Capture", () => {
-  test.setTimeout(600_000); // 10 min for all screens x 2 viewports
+  test.setTimeout(1_200_000); // 20 min for all screens x 2 viewports
 
   test.beforeAll(() => {
     fs.mkdirSync(DESKTOP_DIR, { recursive: true });
