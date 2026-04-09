@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
       svg.setAttribute('height', '500');
 
       if (typeof svgPanZoom !== 'undefined') {
-        svgPanZoom(svg, {
-          zoomEnabled: true,
+        const pz = svgPanZoom(svg, {
+          zoomEnabled: false,   // Disable default scroll zoom
           panEnabled: true,
           controlIconsEnabled: true,
           fit: true,
@@ -38,6 +38,27 @@ document.addEventListener('DOMContentLoaded', () => {
           maxZoom: 10,
           zoomScaleSensitivity: 0.3,
         });
+
+        // Store instance on SVG for reuse
+        svg.__pz = pz;
+
+        // Ctrl+wheel = zoom (Figma-style), regular scroll passes through
+        const container = svg.closest('.mermaid-container') || svg.parentElement;
+        container.addEventListener('wheel', (e) => {
+          if (!e.ctrlKey && !e.metaKey) return;
+          e.preventDefault();
+          e.stopPropagation();
+          const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+          const point = pz.getPan();
+          pz.zoomAtPointBy(factor, { x: e.offsetX, y: e.offsetY });
+        }, { passive: false });
+
+        // Show hint
+        const hint = document.createElement('div');
+        hint.textContent = 'Ctrl + scroll to zoom · Drag to pan';
+        hint.style.cssText = 'position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--color-muted);opacity:0.6;pointer-events:none;';
+        container.style.position = 'relative';
+        container.appendChild(hint);
       }
     });
   });
